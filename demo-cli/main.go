@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	pb "github.com/socylx/laracoms/demo-service/proto/demo"
+	micro "go-micro.dev/v4"
 	"log"
 	"time"
 )
