@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	_ "github.com/go-micro/plugins/v4/registry/etcd"
 	database "github.com/socylx/laracoms/user-service/db"
 	"github.com/socylx/laracoms/user-service/handler"
 	"github.com/socylx/laracoms/user-service/model"

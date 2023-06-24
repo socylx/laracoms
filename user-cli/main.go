@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "github.com/go-micro/plugins/v4/registry/etcd"
 	pb "github.com/socylx/laracoms/user-service/proto/user"
 	cli "github.com/urfave/cli/v2"
 	micro "go-micro.dev/v4"

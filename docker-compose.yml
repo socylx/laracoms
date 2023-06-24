@@ -3,27 +3,35 @@ version: '3.3'
 
 services:
   laracom-demo-cli:
+    depends_on:
+      - laracom-etcd
     build: ./demo-cli
     environment:
-      MICRO_REGISTRY: "mdns"
+      MICRO_REGISTRY: "etcd"
+      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
 
   laracom-demo-service:
+    depends_on:
+      - laracom-etcd
     build: ./demo-service
     ports:
       - 9091:9091
     environment:
       MICRO_SERVER_ADDRESS: ":9091"
-      MICRO_REGISTRY: "mdns"
+      MICRO_REGISTRY: "etcd"
+      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
 
   laracom-user-service:
     depends_on:
       - laracom-user-db
+      - laracom-etcd
     build: ./user-service
     ports:
       - 9092:9091
     environment:
       MICRO_SERVER_ADDRESS: ":9091"
-      MICRO_REGISTRY: "mdns"
+      MICRO_REGISTRY: "etcd"
+      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
       DB_HOST: "laracom-user-db:3306"
       DB_NAME: "laracom_user"
       DB_USER: "test"
@@ -44,9 +52,21 @@ services:
       MYSQL_ROOT_PASSWORD: "root"
 
   laracom-user-cli:
+    depends_on:
+      - laracom-etcd
     build: ./user-cli
     environment:
-      MICRO_REGISTRY: "mdns"
+      MICRO_REGISTRY: "etcd"
+      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
+
+  laracom-etcd:
+    image: bitnami/etcd:latest
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://laracom-etcd:2379"
+    ports:
+      - 2379:2379
+      - 2380:2380
 
 volumes:
-  db_data: {}
+  db_data: { }
