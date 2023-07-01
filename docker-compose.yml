@@ -80,6 +80,7 @@ services:
   laracom-product-service:
     depends_on:
       - laracom-product-db
+      - laracom-etcd
     build: ./product-service
     ports:
       - 9093:9091
