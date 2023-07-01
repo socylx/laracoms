@@ -74,6 +74,12 @@ func main() {
 				log.Println(v)
 			}
 
+			resp, err := client.CreatePasswordReset(context.Background(), &pb.PasswordReset{Email: email, Token: "password_reset_token"})
+			if err != nil {
+				log.Fatalf("修改密码失败: %v", err)
+			}
+			log.Println(resp)
+
 			return nil
 		}),
 	)

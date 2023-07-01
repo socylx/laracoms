@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	_ "github.com/go-micro/plugins/v4/broker/nats"
 	_ "github.com/go-micro/plugins/v4/registry/etcd"
 	database "github.com/socylx/laracoms/user-service/db"
 	"github.com/socylx/laracoms/user-service/handler"
@@ -43,13 +44,14 @@ func main() {
 	srv.Init()
 
 	// 获取 Broker 实例
-	//pubSub := srv.Server().Options().Broker
+	pubSub := srv.Server().Options().Broker
 
 	// 注册处理器
 	_ = pb.RegisterUserServiceHandler(srv.Server(), &handler.UserService{
 		Repo:      repo,
 		ResetRepo: resetRepo,
 		Token:     token,
+		PubSub:    pubSub,
 	})
 
 	// 启动用户服务
