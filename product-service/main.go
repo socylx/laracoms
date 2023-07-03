@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	_ "github.com/go-micro/plugins/v4/registry/etcd"
+	"github.com/go-micro/plugins/v4/wrapper/monitoring/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/socylx/laracoms/product-service/db"
 	"github.com/socylx/laracoms/product-service/handler"
 	"github.com/socylx/laracoms/product-service/model"
@@ -10,7 +12,19 @@ import (
 	"github.com/socylx/laracoms/product-service/repo"
 	micro "go-micro.dev/v4"
 	"log"
+	"net/http"
 )
+
+// 启动 HTTP 服务监听客户端数据采集
+func prometheusBoot() {
+	http.Handle("/metrics", promhttp.Handler())
+	go func() {
+		err := http.ListenAndServe(":9092", nil)
+		if err != nil {
+			log.Fatal("ListenAndServe: ", err)
+		}
+	}()
+}
 
 func main() {
 	// 创建数据库连接，程序退出时断开连接
@@ -42,6 +56,7 @@ func main() {
 	srv := micro.NewService(
 		micro.Name("product"),
 		micro.Version("latest"), // 新增接口版本参数
+		micro.WrapHandler(prometheus.NewHandlerWrapper()),
 	)
 	srv.Init()
 
@@ -51,6 +66,9 @@ func main() {
 	_ = pb.RegisterBrandServiceHandler(srv.Server(), &handler.BrandService{BrandRepo: brandRepo})
 	_ = pb.RegisterCategoryServiceHandler(srv.Server(), &handler.CategoryService{CategoryRepo: categoryRepo})
 	_ = pb.RegisterAttributeServiceHandler(srv.Server(), &handler.AttributeService{AttributeRepo: attributeRepo})
+
+	// 采集监控数据
+	prometheusBoot()
 
 	// 启动商品服务
 	if err := srv.Run(); err != nil {
