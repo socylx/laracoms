@@ -5,8 +5,8 @@ import (
 	_ "github.com/go-micro/plugins/v4/registry/etcd"
 	traceplugin "github.com/go-micro/plugins/v4/wrapper/trace/opentracing"
 	"github.com/opentracing/opentracing-go"
+	"github.com/socylx/laracoms/common/tracer"
 	pb "github.com/socylx/laracoms/demo-service/proto/demo"
-	"github.com/socylx/laracoms/demo-service/trace"
 	micro "go-micro.dev/v4"
 	"go-micro.dev/v4/metadata"
 	"log"
@@ -41,7 +41,7 @@ func (s *DemoServiceHandler) SayHello(ctx context.Context, req *pb.DemoRequest, 
 
 func main() {
 	// 初始化全局服务追踪
-	t, io, err := trace.NewTracer("demo", os.Getenv("MICRO_TRACE_SERVER"))
+	t, io, err := tracer.NewTracer("demo", os.Getenv("MICRO_TRACE_SERVER"))
 	if err != nil {
 		log.Fatal(err)
 	}
