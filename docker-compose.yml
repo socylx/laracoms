@@ -106,6 +106,20 @@ services:
       MYSQL_DATABASE: "laracom_product"
       MYSQL_ROOT_PASSWORD: "root"
 
+  laracom-web-dashboard:
+    depends_on:
+      - laracom-etcd
+    image: xpunch/go-micro-dashboard:latest
+    container_name: laracom-web-dashboard
+    ports:
+      - "8082:8082"
+    environment:
+      - MICRO_REGISTRY=etcd
+      - MICRO_REGISTRY_ADDRESS=laracom-etcd:2379
+      - SERVER_ADDRESS=:8082
+      - SERVER_AUTH_USERNAME=admin
+      - SERVER_AUTH_PASSWORD=micro
+
 volumes:
   db_user_data: { }
   db_product_data: { }
