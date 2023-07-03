@@ -8,7 +8,8 @@ require (
 	github.com/go-micro/plugins/v4/registry/etcd v1.2.0
 	github.com/go-micro/plugins/v4/wrapper/trace/opentracing v1.2.0
 	github.com/opentracing/opentracing-go v1.2.0
-	github.com/socylx/laracoms/demo-service v0.0.0-20230703065452-102a6fb0321e
+	github.com/socylx/laracoms/common v0.0.0-20230703075321-5ab74aeac5d7
+	github.com/socylx/laracoms/demo-service v0.0.0-00010101000000-000000000000
 	go-micro.dev/v4 v4.10.2
 )
 
@@ -55,7 +56,7 @@ require (
 	go.etcd.io/etcd/api/v3 v3.5.2 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.2 // indirect
 	go.etcd.io/etcd/client/v3 v3.5.2 // indirect
-	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.17.0 // indirect
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect

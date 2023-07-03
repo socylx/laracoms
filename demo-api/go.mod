@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/socylx/laracoms/demo-service v0.0.0-20230703065452-102a6fb0321e
+	github.com/socylx/laracoms/demo-service v0.0.0-20230703075121-8e5f76817e1f
 	go-micro.dev/v4 v4.10.2
 )
 
