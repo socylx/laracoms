@@ -1,12 +1,15 @@
 package main
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/opentracing/opentracing-go"
+	"github.com/socylx/laracoms/common/tracer"
+	"github.com/socylx/laracoms/common/wrapper/tracer/opentracing/gin2micro"
 	pb "github.com/socylx/laracoms/demo-service/proto/demo"
 	"go-micro.dev/v4/client"
 	"go-micro.dev/v4/web"
 	"log"
+	"os"
 )
 
 type Say struct{}
@@ -18,16 +21,19 @@ var (
 func (s *Say) Anything(c *gin.Context) {
 	log.Print("Received Say.Anything API request")
 	c.JSON(200, map[string]string{
-		"message": "你好，学院君",
+		"text": "你好，学院君",
 	})
 }
 
 func (s *Say) Hello(c *gin.Context) {
-	log.Print("Received Say.Hello API request")
+	log.Println("Received Say.Hello API request")
 
 	name := c.Param("name")
-
-	response, err := cli.SayHello(context.TODO(), &pb.DemoRequest{
+	ctx, ok := gin2micro.ContextWithSpan(c)
+	if ok == false {
+		log.Println("get context err")
+	}
+	response, err := cli.SayHello(ctx, &pb.DemoRequest{
 		Name: name,
 	})
 
@@ -39,9 +45,19 @@ func (s *Say) Hello(c *gin.Context) {
 }
 
 func main() {
+	var name = "laracom.api.demo"
+	// 初始化追踪器
+	gin2micro.SetSamplingFrequency(50)
+	t, io, err := tracer.NewTracer(name, os.Getenv("MICRO_TRACE_SERVER"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = io.Close() }()
+	opentracing.SetGlobalTracer(t)
+
 	// Create service
 	service := web.NewService(
-		web.Name("laracom.api.demo"),
+		web.Name(name),
 	)
 	_ = service.Init()
 
@@ -51,8 +67,10 @@ func main() {
 	// Create RESTful handler (using Gin)
 	say := new(Say)
 	router := gin.Default()
-	router.GET("/hello", say.Anything)
-	router.GET("/hello/:name", say.Hello)
+	r := router.Group("/demo")
+	r.Use(gin2micro.TracerWrapper)
+	r.GET("/hello", say.Anything)
+	r.GET("/hello/:name", say.Hello)
 
 	// Register Handler
 	service.Handle("/", router)
