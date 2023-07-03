@@ -3,16 +3,20 @@ version: '3.3'
 
 services:
   laracom-demo-cli:
+    depends_on:
+      - jaeger
     build: ./demo-cli
     environment:
       MICRO_REGISTRY: "etcd"
       MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
+      MICRO_TRACE_SERVER: "jaeger:6831"
 
   laracom-demo-service:
     depends_on:
       - etcd1
       - etcd2
       - etcd3
+      - jaeger
     build: ./demo-service
     ports:
       - 9091:9091
@@ -20,6 +24,7 @@ services:
       MICRO_SERVER_ADDRESS: ":9091"
       MICRO_REGISTRY: "etcd"
       MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
+      MICRO_TRACE_SERVER: "jaeger:6831"
 
   laracom-user-service:
     depends_on:
@@ -248,6 +253,12 @@ services:
     env_file:
       - ./conf/grafana/config.monitoring
     restart: always
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
 
 volumes:
   db_user_data: { }

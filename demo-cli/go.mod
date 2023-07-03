@@ -6,7 +6,9 @@ replace github.com/socylx/laracoms/demo-service => /Users/socylx/Development/go/
 
 require (
 	github.com/go-micro/plugins/v4/registry/etcd v1.2.0
-	github.com/socylx/laracoms/demo-service v0.0.0-00010101000000-000000000000
+	github.com/go-micro/plugins/v4/wrapper/trace/opentracing v1.2.0
+	github.com/opentracing/opentracing-go v1.2.0
+	github.com/socylx/laracoms/demo-service v0.0.0-20230703065452-102a6fb0321e
 	go-micro.dev/v4 v4.10.2
 )
 
@@ -46,6 +48,8 @@ require (
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
+	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
+	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.2 // indirect
