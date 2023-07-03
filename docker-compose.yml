@@ -3,36 +3,38 @@ version: '3.3'
 
 services:
   laracom-demo-cli:
-    depends_on:
-      - laracom-etcd
     build: ./demo-cli
     environment:
       MICRO_REGISTRY: "etcd"
-      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
+      MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
 
   laracom-demo-service:
     depends_on:
-      - laracom-etcd
+      - etcd1
+      - etcd2
+      - etcd3
     build: ./demo-service
     ports:
       - 9091:9091
     environment:
       MICRO_SERVER_ADDRESS: ":9091"
       MICRO_REGISTRY: "etcd"
-      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
+      MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
 
   laracom-user-service:
     depends_on:
       - laracom-user-db
-      - laracom-etcd
       - laracom-nats
+      - etcd1
+      - etcd2
+      - etcd3
     build: ./user-service
     ports:
       - 9092:9091
     environment:
       MICRO_SERVER_ADDRESS: ":9091"
       MICRO_REGISTRY: "etcd"
-      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
+      MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
       MICRO_BROKER: "nats"
       MICRO_BROKER_ADDRESS: "laracom-nats:4222"
       DB_HOST: "laracom-user-db:3306"
@@ -55,21 +57,10 @@ services:
       MYSQL_ROOT_PASSWORD: "root"
 
   laracom-user-cli:
-    depends_on:
-      - laracom-etcd
     build: ./user-cli
     environment:
       MICRO_REGISTRY: "etcd"
-      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
-
-  laracom-etcd:
-    image: bitnami/etcd:latest
-    environment:
-      ALLOW_NONE_AUTHENTICATION: "yes"
-      ETCD_ADVERTISE_CLIENT_URLS: "http://laracom-etcd:2379"
-    ports:
-      - 2379:2379
-      - 2380:2380
+      MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
 
   laracom-nats:
     image: nats:latest
@@ -80,14 +71,16 @@ services:
   laracom-product-service:
     depends_on:
       - laracom-product-db
-      - laracom-etcd
+      - etcd1
+      - etcd2
+      - etcd3
     build: ./product-service
     ports:
       - 9093:9091
     environment:
       MICRO_SERVER_ADDRESS: ":9091"
       MICRO_REGISTRY: "etcd"
-      MICRO_REGISTRY_ADDRESS: "laracom-etcd:2379"
+      MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
       DB_HOST: "laracom-product-db:3306"
       DB_NAME: "laracom_product"
       DB_USER: "product"
@@ -108,17 +101,77 @@ services:
 
   laracom-web-dashboard:
     depends_on:
-      - laracom-etcd
+      - etcd1
+      - etcd2
+      - etcd3
     image: xpunch/go-micro-dashboard:latest
     container_name: laracom-web-dashboard
     ports:
       - "8082:8082"
     environment:
       - MICRO_REGISTRY=etcd
-      - MICRO_REGISTRY_ADDRESS=laracom-etcd:2379
+      - MICRO_REGISTRY_ADDRESS=etcd1:2379,etcd2:2379,etcd3:2379
       - SERVER_ADDRESS=:8082
       - SERVER_AUTH_USERNAME=admin
       - SERVER_AUTH_PASSWORD=micro
+
+  etcd1:
+    image: bitnami/etcd:latest
+    container_name: etcd1
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_NAME: "etcd1"
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: "http://etcd1:2380"
+      ETCD_LISTEN_PEER_URLS: "http://0.0.0.0:2380"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://etcd1:2379"
+      ETCD_INITIAL_CLUSTER_TOKEN: "etcd-cluster"
+      ETCD_INITIAL_CLUSTER: "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380"
+      ETCD_INITIAL_CLUSTER_STATE: "new"
+    ports:
+      - 23791:2379
+      - 23801:2380
+
+  etcd2:
+    image: bitnami/etcd:latest
+    container_name: etcd2
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_NAME: "etcd2"
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: "http://etcd2:2380"
+      ETCD_LISTEN_PEER_URLS: "http://0.0.0.0:2380"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://etcd2:2379"
+      ETCD_INITIAL_CLUSTER_TOKEN: "etcd-cluster"
+      ETCD_INITIAL_CLUSTER: "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380"
+      ETCD_INITIAL_CLUSTER_STATE: "new"
+    ports:
+      - 23792:2379
+      - 23802:2380
+
+  etcd3:
+    image: bitnami/etcd:latest
+    container_name: etcd3
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_NAME: "etcd3"
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: "http://etcd3:2380"
+      ETCD_LISTEN_PEER_URLS: "http://0.0.0.0:2380"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://etcd3:2379"
+      ETCD_INITIAL_CLUSTER_TOKEN: "etcd-cluster"
+      ETCD_INITIAL_CLUSTER: "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380"
+      ETCD_INITIAL_CLUSTER_STATE: "new"
+    ports:
+      - 23793:2379
+      - 23803:2380
+
+  e3w:
+    image: soyking/e3w:latest
+    ports:
+      - "8088:8080"
+    volumes:
+      - ./conf/e3w/config.ini:/app/conf/config.default.ini
 
 volumes:
   db_user_data: { }
