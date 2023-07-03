@@ -26,6 +26,15 @@ services:
       MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
       MICRO_TRACE_SERVER: "jaeger:6831"
 
+  laracom-demo-api:
+    build: ./demo-api
+    depends_on:
+      - laracom-demo-service
+    environment:
+      MICRO_REGISTRY: "etcd"
+      MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
+      MICRO_TRACE_SERVER: "jaeger:6831"
+
   laracom-user-service:
     depends_on:
       - laracom-user-db
