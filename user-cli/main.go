@@ -26,7 +26,7 @@ func main() {
 			Usage: "Your Password",
 		},
 	))
-	client := pb.NewUserService("user", srv.Client())
+	client := pb.NewUserService("laracom.service.user", srv.Client())
 
 	// 运行客户端命令调用远程服务逻辑设置
 	srv.Init(

@@ -37,7 +37,7 @@ func main() {
 	// 以下是 Micro 创建微服务流程
 
 	srv := micro.NewService(
-		micro.Name("user"),
+		micro.Name("laracom.service.user"),
 		micro.Version("latest"),
 	)
 

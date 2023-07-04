@@ -113,6 +113,15 @@ services:
       MYSQL_DATABASE: "laracom_product"
       MYSQL_ROOT_PASSWORD: "root"
 
+  laracom-micro-api:
+    image: socylx/micro:latest
+    environment:
+      MICRO_REGISTRY: "etcd"
+      MICRO_REGISTRY_ADDRESS: "etcd1:2379,etcd2:2379,etcd3:2379"
+    ports:
+      - 8888:8080
+    command: api --handler=rpc --namespace=laracom.service
+
   laracom-web-dashboard:
     depends_on:
       - etcd1
