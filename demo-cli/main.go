@@ -6,8 +6,9 @@ import (
 	traceplugin "github.com/go-micro/plugins/v4/wrapper/trace/opentracing"
 	"github.com/opentracing/opentracing-go"
 	"github.com/socylx/laracoms/common/tracer"
+	"github.com/socylx/laracoms/common/wrapper/breaker/hystrix"
 	pb "github.com/socylx/laracoms/demo-service/proto/demo"
-	micro "go-micro.dev/v4"
+	"go-micro.dev/v4"
 	"go-micro.dev/v4/metadata"
 	"log"
 	"os"
@@ -22,9 +23,11 @@ func main() {
 	}
 	defer func() { _ = io.Close() }()
 
+	hystrix.Configure([]string{"laracom.service.demo.DemoService.SayHello"})
 	srv := micro.NewService(
 		micro.Name("laracom.demo.cli"),
 		micro.WrapClient(traceplugin.NewClientWrapper(t)),
+		micro.WrapClient(hystrix.NewClientWrapper()),
 	)
 	srv.Init()
 

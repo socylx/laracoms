@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
+	github.com/eapache/go-resiliency v1.3.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-log/log v0.2.0
 	github.com/opentracing/opentracing-go v1.2.0

@@ -1,12 +1,13 @@
 package hystrix
 
 import (
+	"context"
 	"github.com/afex/hystrix-go/hystrix"
+	"github.com/eapache/go-resiliency/retrier"
 	"go-micro.dev/v4/client"
 	"net"
 	"net/http"
-
-	"context"
+	"time"
 )
 
 type clientWrapper struct {
@@ -15,7 +16,13 @@ type clientWrapper struct {
 
 func (c *clientWrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
 	return hystrix.Do(req.Service()+"."+req.Endpoint(), func() error {
-		return c.Client.Call(ctx, req, rsp, opts...)
+		// 初始化retrier，每隔100ms重试一次，总共重试3次
+		r := retrier.New(retrier.ConstantBackoff(3, 100*time.Millisecond), nil)
+		// retrier 工作模式和 hystrix 类似，在 Run 方法中将待执行的业务逻辑封装到匿名函数传入即可
+		err := r.Run(func() error {
+			return c.Client.Call(ctx, req, rsp, opts...)
+		})
+		return err
 	}, nil)
 }
 
