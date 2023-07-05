@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	_ "github.com/go-micro/plugins/v4/registry/etcd"
+	ratelimiter "github.com/go-micro/plugins/v4/wrapper/ratelimiter/uber"
 	traceplugin "github.com/go-micro/plugins/v4/wrapper/trace/opentracing"
 	"github.com/opentracing/opentracing-go"
 	"github.com/socylx/laracoms/common/tracer"
@@ -51,6 +52,7 @@ func main() {
 	srv := micro.NewService(
 		micro.Name("demo"),
 		micro.WrapHandler(traceplugin.NewHandlerWrapper(opentracing.GlobalTracer())), // 基于 jaeger 采集追踪数据
+		micro.WrapHandler(ratelimiter.NewHandlerWrapper(1000)),
 	)
 	srv.Init()
 
