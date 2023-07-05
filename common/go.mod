@@ -8,6 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-log/log v0.2.0
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/sirupsen/logrus v1.9.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	go-micro.dev/v4 v4.10.2
 )
