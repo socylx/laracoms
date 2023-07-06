@@ -6,6 +6,7 @@ import (
 	ratelimiter "github.com/go-micro/plugins/v4/wrapper/ratelimiter/uber"
 	traceplugin "github.com/go-micro/plugins/v4/wrapper/trace/opentracing"
 	"github.com/opentracing/opentracing-go"
+	_ "github.com/socylx/laracoms/common/log"
 	"github.com/socylx/laracoms/common/tracer"
 	pb "github.com/socylx/laracoms/demo-service/proto/demo"
 	micro "go-micro.dev/v4"
