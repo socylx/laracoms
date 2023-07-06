@@ -5,6 +5,7 @@
 *.so
 *.dylib
 .idea
+.terraform
 
 # Test binary, built with `go test -c`
 *.test
